@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>amims71 :: ~/portfolio</title>
+<meta name="description" content="Amimul Ehshan — developer portfolio." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3Ctext x='8' y='44' font-family='monospace' font-size='34' fill='%2300ff66'%3E%26gt;_%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --bg:#0b0f0a;
+    --bg2:#0e150d;
+    --fg:#b6ffb0;
+    --green:#00ff66;
+    --dim:#5e7a5a;
+    --amber:#ffb86b;
+    --red:#ff5577;
+    --cyan:#7ee7ff;
+    --line:#1a2418;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:"JetBrains Mono","Fira Code","SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:14px;line-height:1.55}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(0,255,102,0.06), transparent 60%),
+      linear-gradient(180deg,#070a07 0%, var(--bg) 40%);
+    min-height:100vh;
+  }
+  /* subtle scanlines */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.02) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;z-index:2;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:24px 20px 80px;position:relative;z-index:1}
+  header.bar{
+    display:flex;align-items:center;gap:8px;
+    background:#10170f;border:1px solid var(--line);border-radius:8px 8px 0 0;
+    padding:8px 12px;font-size:12px;color:var(--dim);
+  }
+  .dot{width:12px;height:12px;border-radius:50%;background:#333}
+  .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+  .bar .title{margin-left:8px}
+  main.term{
+    background:var(--bg2);border:1px solid var(--line);border-top:none;
+    border-radius:0 0 8px 8px;padding:22px;
+    box-shadow:0 30px 80px -20px rgba(0,255,102,0.08), inset 0 0 0 1px #0d130c;
+  }
+  .prompt{color:var(--green)}
+  .prompt::before{content:"amims71@portfolio:~$ ";color:var(--dim)}
+  .cmd{color:var(--fg)}
+  .out{margin:4px 0 22px 0;color:var(--fg)}
+  .out.compact{margin-bottom:14px}
+  h1,h2,h3{font-weight:600;margin:0}
+  h1{font-size:18px;color:var(--green)}
+  .ascii{color:var(--green);white-space:pre;font-size:11px;line-height:1.2;margin:6px 0 14px;text-shadow:0 0 8px rgba(0,255,102,0.25)}
+  .muted{color:var(--dim)}
+  .amber{color:var(--amber)}
+  .cyan{color:var(--cyan)}
+  .red{color:var(--red)}
+  a{color:var(--cyan);text-decoration:none;border-bottom:1px dashed transparent}
+  a:hover{border-bottom-color:var(--cyan)}
+  ul.kv{list-style:none;padding:0;margin:0}
+  ul.kv li{padding:2px 0}
+  ul.kv .k{display:inline-block;min-width:120px;color:var(--dim)}
+  .blink{display:inline-block;width:9px;height:16px;background:var(--green);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* projects */
+  .filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+  .filters button{
+    font:inherit;color:var(--fg);background:#0d140c;border:1px solid var(--line);
+    padding:4px 10px;border-radius:4px;cursor:pointer;
+  }
+  .filters button:hover{border-color:var(--green);color:var(--green)}
+  .filters button.active{background:#0f1d0e;border-color:var(--green);color:var(--green);box-shadow:inset 0 0 0 1px rgba(0,255,102,0.2)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{
+    background:#0c130b;border:1px solid var(--line);border-radius:6px;padding:12px 14px;
+    transition:border-color .15s, transform .15s;
+    display:flex;flex-direction:column;gap:6px;min-height:108px;
+  }
+  .card:hover{border-color:var(--green);transform:translateY(-1px)}
+  .card .name{color:var(--green);font-weight:600;display:flex;align-items:center;gap:6px}
+  .card .name::before{content:"$";color:var(--dim);margin-right:2px}
+  .card .desc{color:var(--fg);font-size:13px;flex:1}
+  .card .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--dim);margin-top:auto}
+  .tag{display:inline-block;padding:1px 6px;border:1px solid var(--line);border-radius:3px}
+  .tag.lang{color:var(--amber);border-color:#3a2e15}
+  .tag.cat{color:var(--cyan);border-color:#15323a}
+  .links{display:flex;gap:10px;font-size:12px}
+  .links a{color:var(--dim)}
+  .links a:hover{color:var(--cyan)}
+  .card.private{border-style:dashed}
+  .card.private:hover{border-color:var(--amber);transform:none}
+  .card.private .name::before{content:"[private]";color:var(--amber);margin-right:6px;font-size:10px;letter-spacing:0.5px;font-weight:normal}
+  ul.plist{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:4px 18px}
+  ul.plist li{padding:3px 0;color:var(--fg);font-size:13px;border-bottom:1px dotted #142013}
+  ul.plist .pn{color:var(--green)}
+  ul.plist .pn::before{content:"[priv] $ ";color:var(--amber);font-size:10px;margin-right:2px}
+  ul.plist .tag{margin-left:4px}
+  ul.timeline{list-style:none;padding:0;margin:0;border-left:2px solid var(--line)}
+  ul.timeline li{position:relative;padding:4px 0 10px 18px;margin-bottom:8px}
+  ul.timeline li::before{content:"●";color:var(--green);position:absolute;left:-9px;top:0;font-size:14px;line-height:1;background:var(--bg2);padding:2px 0}
+  ul.timeline .when{display:block;color:var(--amber);font-size:12px}
+  ul.timeline .what{display:block;margin:2px 0}
+  ul.timeline .how{display:block;font-size:12.5px}
+  .green{color:var(--green)}
+
+  footer{margin-top:24px;color:var(--dim);font-size:12px}
+  footer .prompt::before{color:var(--dim)}
+
+  @media (max-width:600px){
+    .wrap{padding:14px 10px 60px}
+    main.term{padding:14px}
+    .ascii{font-size:9px}
+    ul.kv .k{min-width:90px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="title">— amims71@portfolio: ~ — zsh — 100×40</span>
+  </header>
+
+  <main class="term">
+    <pre class="ascii">                 _              _____ _
+  __ _ _ __ ___ (_)_ __ ___  __|___  / |
+ / _` | '_ ` _ \| | '_ ` _ \/ __| / /| |
+| (_| | | | | | | | | | | | \__ \/ / | |
+ \__,_|_| |_| |_|_|_| |_| |_|___/_/  |_|</pre>
+
+    <p><span class="prompt"></span><span class="cmd">whoami</span></p>
+    <div class="out">
+      <h1>Md Amimul Ehshan</h1>
+      <ul class="kv">
+        <li><span class="k">role</span> Software Engineer</li>
+        <li><span class="k">company</span> Blubird Interactive Ltd</li>
+        <li><span class="k">experience</span> <span id="yoe">10+</span> years <span class="muted">(since Feb 2016)</span></li>
+        <li><span class="k">location</span> Uttara, Dhaka, Bangladesh</li>
+        <li><span class="k">stack</span> <span class="amber">PHP · Laravel · Lumen · Restler · SQL · JavaScript · Vue · React · Linux · Git</span></li>
+      </ul>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">cat about.txt</span></p>
+    <div class="out">
+      10+ years of PHP and Laravel expertise with strong OOP fundamentals, writing DRY and SOLID code.
+      Comfortable with Laravel websockets, queues, jobs, console commands, resources, traits, middleware, and packages.
+      Built and shipped SaaS products and a long list of third-party integrations — Zoho Books, DocuSign, UISP CRM, Drip, Google Calendar, Gmail, Stripe, Twilio, SendGrid, and more.
+      Cross-team experience with US engineers; effective mentor, problem-solver, and team player.
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">cat experience/ <span class="muted">--timeline</span></span></p>
+    <div class="out">
+      <ul class="timeline">
+        <li>
+          <span class="when">2021 — Present <span class="muted">· 3.7 yr</span></span>
+          <span class="what"><strong class="green">Software Engineer</strong> · Blubird Interactive Ltd, Dhaka</span>
+          <span class="how muted">PHP, Laravel, API development, ERD design, legacy refactoring, SOLID principles, code optimization, testing, Jira, Git, Linux, deployment, team leadership.</span>
+        </li>
+        <li>
+          <span class="when">Sep 2020 — Jan 2021 <span class="muted">· 5 mo</span></span>
+          <span class="what"><strong class="green">Software Developer</strong> · Banglalink Digital, Dhaka</span>
+          <span class="how muted">Web-based finance automation system — PHP, Laravel, Oracle.</span>
+        </li>
+        <li>
+          <span class="when">Dec 2017 — Sep 2020 <span class="muted">· 2.75 yr</span></span>
+          <span class="what"><strong class="green">Software Developer</strong> · Digicon Technologies Ltd, Dhaka</span>
+          <span class="how muted">Web application development, UI/ML &amp; ERD design, server deployment, bug fixes, client management.</span>
+        </li>
+        <li>
+          <span class="when">Feb 2016 — Nov 2017 <span class="muted">· 1.75 yr</span></span>
+          <span class="what"><strong class="green">Jr. Software Developer</strong> · Digicon Technologies Ltd, Dhaka</span>
+          <span class="how muted">Website and API development, SQL queries, website maintenance.</span>
+        </li>
+      </ul>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">ls notable-projects/</span></p>
+    <div class="out compact">
+      <div class="grid">
+        <article class="card private">
+          <div class="name">Multi Tenant E-commerce System</div>
+          <div class="desc">Theme customization, order &amp; inventory management, delivery integration, payment processing.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">SaaS</span><span class="muted">ongoing</span></div>
+        </article>
+        <article class="card private">
+          <div class="name">Instant Sale</div>
+          <div class="desc">Fundraising platform with admin / sponsor / student roles and Stripe integration for multiple payment methods. V2 planned as SaaS with distributor roles.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">Stripe</span></div>
+        </article>
+        <article class="card private">
+          <div class="name">XP Track</div>
+          <div class="desc">People &amp; inventory tracking with websocket integration; comprehensive API; SOLID-driven refactor; PDF/CSV reporting; custom blueprint mapping synced with Google Maps.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">websockets</span><span class="tag cat">API</span></div>
+        </article>
+        <article class="card private">
+          <div class="name">Sell Miles</div>
+          <div class="desc">Marketplace to buy and sell credit-card and airline points.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">marketplace</span></div>
+        </article>
+        <article class="card private">
+          <div class="name">Ad Reservation Management</div>
+          <div class="desc">SaaS for ad planning, edition setup, and publish scheduling.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">SaaS</span></div>
+        </article>
+        <article class="card private">
+          <div class="name">CRM <span class="muted" style="font-weight:normal">(myhopscotch.com/crm)</span></div>
+          <div class="desc">Auto lead assignment, deal &amp; client tracking, Twilio SMS/call integration, SendGrid email automation with event tracking, Gmail SDK integration with OAuth 2.0.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">Twilio</span><span class="tag cat">SendGrid</span><span class="tag cat">Gmail</span></div>
+        </article>
+      </div>
+
+      <p class="muted" style="margin:18px 0 6px"># additional contributions</p>
+      <ul class="plist">
+        <li><span class="pn">Visitor Management System</span> <span class="tag lang">Laravel</span></li>
+        <li><span class="pn">Student Management System</span> <span class="tag lang">Laravel</span></li>
+        <li><span class="pn">Property Management System</span> <span class="tag lang">Laravel</span></li>
+        <li><span class="pn">Restaurant Management System</span> <span class="tag lang">Laravel</span></li>
+        <li><span class="pn">Audit Management Portal</span> <span class="tag lang">Laravel</span></li>
+        <li><span class="pn">Asset Tracking System</span> <span class="tag lang">Laravel</span></li>
+        <li><span class="pn">Multiple API-based systems</span> <span class="tag lang">Laravel</span> <span class="tag lang">Lumen</span> <span class="tag lang">Restler</span></li>
+      </ul>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">ls laravel-packages/</span></p>
+    <div class="out">
+      <ul class="plist">
+        <li><span class="pn">acl-roles-permissions</span> <span class="tag lang">Laravel</span> <span class="muted">— ACL-based role &amp; permission management</span></li>
+        <li><span class="pn">error-log-mailer</span> <span class="tag lang">Laravel</span> <span class="muted">— error logging + mail notification system</span></li>
+        <li><span class="pn">unit-test-generator</span> <span class="tag lang">Laravel</span> <span class="muted">— automated unit-test template generator</span></li>
+      </ul>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">ls hobbies/ <span class="muted">--sort=recent</span></span></p>
+    <div class="out compact">
+      <div class="filters" id="filters">
+        <button class="active" data-cat="all">all</button>
+        <button data-cat="ai">ai &amp; mcp</button>
+        <button data-cat="web">web apps</button>
+        <button data-cat="tool">tools</button>
+        <button data-cat="algo">algorithms / ml</button>
+        <button data-cat="learn">learning</button>
+        <button data-cat="java">java</button>
+      </div>
+
+      <div class="grid" id="grid">
+        <!-- AI / MCP / Recent -->
+        <article class="card" data-cat="ai">
+          <div class="name">local-terminal-mcp</div>
+          <div class="desc">MCP server that runs allowlisted shell commands on macOS from Claude. Stdio, regex allow/deny, audit log.</div>
+          <div class="meta"><span class="tag lang">JavaScript</span><span class="tag cat">mcp</span><span class="muted">2026</span></div>
+          <div class="links"><a href="https://github.com/amims71/local-terminal-mcp" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card private" data-cat="ai">
+          <div class="name">sql-agent</div>
+          <div class="desc">Python agent that translates natural-language queries into SQL.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">llm</span><span class="muted">2025</span></div>
+        </article>
+
+        <article class="card" data-cat="ai web">
+          <div class="name">react-terminal-404</div>
+          <div class="desc">Terminal-styled 404 page built with React + TypeScript.</div>
+          <div class="meta"><span class="tag lang">TypeScript</span><span class="tag cat">ui</span><span class="muted">2026</span></div>
+          <div class="links">
+            <a href="https://github.com/amims71/react-terminal-404" target="_blank" rel="noopener">repo →</a>
+            <a href="https://react-terminal-404.vercel.app" target="_blank" rel="noopener">live →</a>
+          </div>
+        </article>
+
+        <article class="card" data-cat="web">
+          <div class="name">stop-watch</div>
+          <div class="desc">Minimal stopwatch web app.</div>
+          <div class="meta"><span class="tag lang">HTML</span><span class="muted">2026</span></div>
+          <div class="links"><a href="https://github.com/amims71/stop-watch" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <!-- Web Apps -->
+        <article class="card private" data-cat="web">
+          <div class="name">e-ticket</div>
+          <div class="desc">Online ticket booking system in PHP.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">web</span></div>
+        </article>
+
+        <article class="card private" data-cat="web">
+          <div class="name">eticket</div>
+          <div class="desc">Earlier iteration of the ticket booking platform.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">web</span></div>
+        </article>
+
+        <article class="card private" data-cat="web">
+          <div class="name">e-boat</div>
+          <div class="desc">Boat booking web application.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">web</span></div>
+        </article>
+
+        <article class="card" data-cat="web">
+          <div class="name">restaurant</div>
+          <div class="desc">Restaurant Management System built with Laravel.</div>
+          <div class="meta"><span class="tag lang">Laravel</span><span class="tag cat">web</span></div>
+          <div class="links"><a href="https://github.com/amims71/restaurant" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="web">
+          <div class="name">rtms</div>
+          <div class="desc">Railway Ticket Management System.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">web</span></div>
+          <div class="links"><a href="https://github.com/amims71/rtms" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="web">
+          <div class="name">pyrms</div>
+          <div class="desc">Restaurant management system written in Python.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">web</span></div>
+          <div class="links"><a href="https://github.com/amims71/pyrms" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="web">
+          <div class="name">pyhms</div>
+          <div class="desc">Python-based hospital/hotel management system.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">web</span></div>
+          <div class="links">
+            <a href="https://github.com/amims71/pyhms" target="_blank" rel="noopener">repo →</a>
+            <a href="https://pyhms.vercel.app" target="_blank" rel="noopener">live →</a>
+          </div>
+        </article>
+
+        <article class="card private" data-cat="web">
+          <div class="name">e-com</div>
+          <div class="desc">E-commerce frontend built with Vue.</div>
+          <div class="meta"><span class="tag lang">Vue</span><span class="tag cat">web</span></div>
+        </article>
+
+        <article class="card private" data-cat="web">
+          <div class="name">school</div>
+          <div class="desc">School management system in PHP.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">web</span></div>
+        </article>
+
+        <article class="card" data-cat="web">
+          <div class="name">gym</div>
+          <div class="desc">Gym management web app.</div>
+          <div class="meta"><span class="tag lang">JavaScript</span><span class="tag cat">web</span></div>
+          <div class="links"><a href="https://github.com/amims71/gym" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card private" data-cat="web">
+          <div class="name">quiz</div>
+          <div class="desc">Quiz application with multiple choice questions.</div>
+          <div class="meta"><span class="tag lang">HTML</span><span class="tag cat">web</span></div>
+        </article>
+
+        <article class="card private" data-cat="web">
+          <div class="name">weather-app</div>
+          <div class="desc">Simple weather dashboard.</div>
+          <div class="meta"><span class="tag cat">web</span></div>
+        </article>
+
+        <!-- Tools / Integrations -->
+        <article class="card private" data-cat="tool">
+          <div class="name">sql-editor</div>
+          <div class="desc">Browser-based SQL editor.</div>
+          <div class="meta"><span class="tag lang">JavaScript</span><span class="tag cat">tool</span></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">kyc</div>
+          <div class="desc">PHP wrapper for the porichoy.gov.bd KYC API.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">api</span></div>
+          <div class="links"><a href="https://github.com/amims71/kyc" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card private" data-cat="tool">
+          <div class="name">zoho-raw</div>
+          <div class="desc">Raw PHP integration with Zoho APIs.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">api</span></div>
+        </article>
+
+        <article class="card private" data-cat="tool">
+          <div class="name">telegram</div>
+          <div class="desc">Telegram bot integration in PHP.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">api</span></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">socket</div>
+          <div class="desc">PHP socket programming experiments.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">network</span></div>
+          <div class="links"><a href="https://github.com/amims71/socket" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">db-truncate</div>
+          <div class="desc">PHP utility to truncate database tables safely.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">tool</span></div>
+          <div class="links"><a href="https://github.com/amims71/db-truncate" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">package-skeleton</div>
+          <div class="desc">Boilerplate skeleton for PHP packages.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">scaffold</span></div>
+          <div class="links"><a href="https://github.com/amims71/package-skeleton" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card private" data-cat="tool">
+          <div class="name">acl</div>
+          <div class="desc">Access control / roles &amp; permissions in PHP.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">auth</span></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">ibo-watcher</div>
+          <div class="desc">PHP script that watches IBO videos automatically.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">automation</span></div>
+          <div class="links"><a href="https://github.com/amims71/ibo-watcher" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">luhn-algo</div>
+          <div class="desc">Luhn algorithm implementation in PHP (card validation).</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">algo</span></div>
+          <div class="links"><a href="https://github.com/amims71/luhn-algo" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="tool">
+          <div class="name">mujib-borsho</div>
+          <div class="desc">PHP utility to render Mujib Borsho calendar dates.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">utility</span></div>
+          <div class="links"><a href="https://github.com/amims71/mujib-borsho" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <!-- Algorithms / ML -->
+        <article class="card" data-cat="algo">
+          <div class="name">knn</div>
+          <div class="desc">K-Nearest Neighbors classifier from scratch.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/knn" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">kmean</div>
+          <div class="desc">K-Means clustering implementation.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/kmean" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">kmedian</div>
+          <div class="desc">K-Median clustering implementation.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/kmedian" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">naive-bayes</div>
+          <div class="desc">Naive Bayes classifier in Python.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/naive-bayes" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">dtree</div>
+          <div class="desc">Decision tree algorithm implementation.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/dtree" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">apriori</div>
+          <div class="desc">Apriori association-rule mining algorithm.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/apriori" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">skin</div>
+          <div class="desc">Skin-related image classification experiment.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">ml</span></div>
+          <div class="links"><a href="https://github.com/amims71/skin" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">conflict-serializability</div>
+          <div class="desc">Conflict serializability checker for DB schedules.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">db</span></div>
+          <div class="links"><a href="https://github.com/amims71/conflict-serializability" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="algo">
+          <div class="name">btree</div>
+          <div class="desc">B-Tree data structure implementation.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">ds</span></div>
+          <div class="links"><a href="https://github.com/amims71/btree" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <!-- Java -->
+        <article class="card private" data-cat="java">
+          <div class="name">OAuthDemo</div>
+          <div class="desc">OAuth flow demo in Java.</div>
+          <div class="meta"><span class="tag lang">Java</span><span class="tag cat">auth</span></div>
+        </article>
+
+        <article class="card" data-cat="java">
+          <div class="name">java-fx-chat</div>
+          <div class="desc">JavaFX desktop chat application.</div>
+          <div class="meta"><span class="tag lang">Java</span><span class="tag cat">desktop</span></div>
+          <div class="links"><a href="https://github.com/amims71/java-fx-chat" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <!-- Learning -->
+        <article class="card private" data-cat="learn">
+          <div class="name">lws-a1 … a12</div>
+          <div class="desc">Twelve assignments from the Learn-with-Sumit React/Next.js course — each deployed on Vercel.</div>
+          <div class="meta"><span class="tag lang">JavaScript</span><span class="tag cat">course</span></div>
+        </article>
+
+        <article class="card" data-cat="learn">
+          <div class="name">django-learn</div>
+          <div class="desc">Django framework learning playground.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">course</span></div>
+          <div class="links"><a href="https://github.com/amims71/django-learn" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card" data-cat="learn">
+          <div class="name">react-first</div>
+          <div class="desc">First steps with React.</div>
+          <div class="meta"><span class="tag lang">React</span><span class="tag cat">course</span></div>
+          <div class="links"><a href="https://github.com/amims71/react-first" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+
+        <article class="card private" data-cat="learn">
+          <div class="name">py-train</div>
+          <div class="desc">Python training exercises.</div>
+          <div class="meta"><span class="tag lang">Python</span><span class="tag cat">course</span></div>
+        </article>
+
+        <article class="card" data-cat="learn">
+          <div class="name">unittesting</div>
+          <div class="desc">PHP unit testing practice repo.</div>
+          <div class="meta"><span class="tag lang">PHP</span><span class="tag cat">testing</span></div>
+          <div class="links"><a href="https://github.com/amims71/unittesting" target="_blank" rel="noopener">repo →</a></div>
+        </article>
+      </div>
+      <p class="muted" style="margin:12px 0 0">— see full list: <a href="https://github.com/amims71?tab=repositories" target="_blank" rel="noopener">github.com/amims71</a></p>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">cat education.txt</span></p>
+    <div class="out">
+      <ul class="kv">
+        <li><span class="k">2020 – 2021</span> Master’s in IT · <strong>University of Dhaka</strong> <span class="muted">— CGPA 3.48/4.00</span></li>
+        <li><span class="k">2014 – 2018</span> BSc in CSE · <strong>Daffodil International University</strong> <span class="muted">— CGPA 3.46/4.00</span></li>
+        <li><span class="k">2011 – 2013</span> HSC, Science · <strong>Cantonment Public College</strong> <span class="muted">— GPA 5.00/5.00</span></li>
+        <li><span class="k">2009 – 2011</span> SSC, Science · <strong>Nishindara Fakir Uddin School</strong> <span class="muted">— GPA 5.00/5.00</span></li>
+      </ul>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">cat awards.txt</span></p>
+    <div class="out">
+      Inter Cantonment Math Olympiad, 2012 — <span class="amber">1st position</span>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">cat contact.txt</span></p>
+    <div class="out">
+      <ul class="kv">
+        <li><span class="k">email</span> <a class="js-mail" href="#" data-u1="amimul" data-u2="ehshan29" data-d="gmail" data-t="com">—</a></li>
+        <li><span class="k">phone</span> <a class="js-tel" href="#" data-c="880" data-n1="17528" data-n2="04620">—</a></li>
+        <li><span class="k">github</span> <a href="https://github.com/amims71" target="_blank" rel="noopener">github.com/amims71</a></li>
+        <li><span class="k">linkedin</span> <a href="https://linkedin.com/in/amims71" target="_blank" rel="noopener">linkedin.com/in/amims71</a></li>
+        <li><span class="k">twitter</span> <a href="https://twitter.com/amims71" target="_blank" rel="noopener">@amims71</a></li>
+        <li><span class="k">location</span> Uttara, Dhaka, Bangladesh</li>
+      </ul>
+    </div>
+
+    <p><span class="prompt"></span><span class="cmd">exit</span><span class="blink"></span></p>
+
+    <footer>
+      <span class="prompt"></span><span class="muted">Logout. Static site hosted on GitHub Pages.</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    const filters=document.getElementById('filters');
+    const cards=[...document.querySelectorAll('#grid .card')];
+    filters.addEventListener('click',e=>{
+      const btn=e.target.closest('button');if(!btn)return;
+      filters.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===btn));
+      const cat=btn.dataset.cat;
+      cards.forEach(c=>{
+        const cats=(c.dataset.cat||'').split(/\s+/);
+        c.style.display=(cat==='all'||cats.includes(cat))?'':'none';
+      });
+    });
+
+    // assemble contact details at runtime — keeps source free of plain email/phone
+    const at=String.fromCharCode(64), dot=String.fromCharCode(46), plus=String.fromCharCode(43);
+    document.querySelectorAll('a.js-mail').forEach(a=>{
+      const addr=a.dataset.u1+a.dataset.u2+at+a.dataset.d+dot+a.dataset.t;
+      a.textContent=addr;
+      a.href='mailto:'+addr;
+    });
+    // years of experience since first job (Feb 2016) — auto-rounded
+    const yoe=document.getElementById('yoe');
+    if(yoe){
+      const start=new Date(2016,1,1); // Feb 2016
+      const now=new Date();
+      const months=(now.getFullYear()-start.getFullYear())*12+(now.getMonth()-start.getMonth());
+      yoe.textContent=Math.round(months/12)+'+';
+    }
+    document.querySelectorAll('a.js-tel').forEach(a=>{
+      const cc=a.dataset.c, n=a.dataset.n1+a.dataset.n2;
+      const pretty=plus+cc+' '+n.slice(0,4)+' '+n.slice(4);
+      a.textContent=pretty;
+      a.href='tel:'+plus+cc+n;
+    });
+  })();
+</script>
+</body>
+</html>
