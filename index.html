@@ -163,7 +163,7 @@
     <div class="out">
       <ul class="timeline">
         <li>
-          <span class="when">2021 — Present <span class="muted">· 3.7 yr</span></span>
+          <span class="when">2021 — Present <span class="muted js-dur" data-since="2021-02"></span></span>
           <span class="what"><strong class="green">Senior Software Engineer</strong> · Blubird Interactive Ltd, Dhaka</span>
           <span class="how muted">PHP, Laravel, API development, ERD design, legacy refactoring, SOLID principles, code optimization, testing, Jira, Git, Linux, deployment, team leadership.</span>
         </li>
@@ -649,6 +649,13 @@
       const months=(now.getFullYear()-start.getFullYear())*12+(now.getMonth()-start.getMonth());
       yoe.textContent=Math.round(months/12)+'+';
     }
+    // live tenure for ongoing roles — "· N yr" / "· N mo" from data-since="YYYY-MM"
+    document.querySelectorAll('.js-dur').forEach(el=>{
+      const [y,m]=el.dataset.since.split('-').map(Number);
+      const start=new Date(y,m-1,1), now=new Date();
+      const months=(now.getFullYear()-start.getFullYear())*12+(now.getMonth()-start.getMonth());
+      el.textContent='· '+(months<12?months+' mo':(months/12).toFixed(1).replace(/\.0$/,'')+' yr');
+    });
     document.querySelectorAll('a.js-tel').forEach(a=>{
       const cc=a.dataset.c, n=a.dataset.n1+a.dataset.n2;
       const pretty=plus+cc+' '+n.slice(0,4)+' '+n.slice(4);
